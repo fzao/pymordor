@@ -4,7 +4,7 @@
 
     Author(s) : Fabrice Zaoui
 
-    Copyright EDF 2016
+    Copyright EDF 2016-2018
 
 """
 
@@ -162,3 +162,27 @@ def calcidjour(datedeb, datefin):
 
     return id_jour
 
+def time_prep(firstdate, lastdate, step):
+    """
+    Preparation of information on the calculation times
+    :param firstdate: date of the begining of the calculation (datetime format)
+    :param lastdate: date of the end of the calculation (datetime format)
+    :param step: a character indicating the calculation step ('J' for days and 'H' for 'hours')
+    :return: a dictionary of global information including the time period value ('ndates')
+    """
+    if isinstance(firstdate, datetime.datetime) & isinstance(lastdate, datetime.datetime):
+        diffdate = lastdate - firstdate
+        if step == 'D':
+            txunit = "days"
+            dt = 86400
+            ndates = int(diffdate.days)
+        elif step == 'H':
+            txunit = "hours"
+            dt = 3600
+            ndates = int(diffdate.days * 24 + diffdate.seconds/3600)
+        else:
+            return None
+
+    else:
+        return None
+    return{'dt':dt, 'date1':firstdate, 'date2':lastdate, 'txunit':txunit, 'ndates':ndates, 'step':step}
