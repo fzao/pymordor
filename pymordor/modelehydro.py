@@ -39,7 +39,7 @@ else:
     raise Exception(u'unsupported OS')
 
 def creerbaseforcage(nom, npluvio, carapluvio, nmeteo, carameteo, nqinj, \
-                ndates, ptr_tm_debut, dt0):
+                ndates, tdeb, dt0):
     """ handle of weather inputs """
     # Data preparation in ctype format
     nom_c = c_char_p(nom.encode())
@@ -53,14 +53,24 @@ def creerbaseforcage(nom, npluvio, carapluvio, nmeteo, carameteo, nqinj, \
     carameteo_c = (c_double * sizetab)(*carameteo)
     nqinj_c = c_int(nqinj)
     ndates_c = c_int(ndates)
-    ptr_tm_debut_c = (c_double * 9)(*ptr_tm_debut)
+    tm = np.zeros((9, 1))
+    tm[0] = tdeb.timetuple().tm_sec
+    tm[1] = tdeb.timetuple().tm_min
+    tm[2] = tdeb.timetuple().tm_hour
+    tm[3] = tdeb.timetuple().tm_mday
+    tm[4] = tdeb.timetuple().tm_mon
+    tm[5] = tdeb.timetuple().tm_year
+    tm[6] = tdeb.timetuple().tm_wday
+    tm[7] = tdeb.timetuple().tm_yday
+    tm[8] = tdeb.timetuple().tm_isdst
+    tm_c = (c_double * 9)(*tm)
     dt_c = c_double(dt0)
 
     # calling the library
     valeur = MY_LIBRARY.CreerBaseForcage(nom_c, npluvio_c, \
         byref(carapluvio_c), \
         nmeteo_c, byref(carameteo_c), nqinj_c, ndates_c, \
-        byref(ptr_tm_debut_c), dt_c)
+        byref(tm_c), dt_c)
 
     # return values in standard types
     return valeur
