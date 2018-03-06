@@ -148,7 +148,7 @@ def calcidjour(datedeb, datefin):
     :param datefin: end date (datetime format)
     :return: number of days
     """
-    date_gen = [datedeb + datetime.timedelta(days=x) for x in range(0, (datefin-datedeb).days)]
+    date_gen = [datedeb + datetime.timedelta(days=x) for x in range(0, (datefin-datedeb).days+1)]
     id_jour= [[date_gen[x].timetuple().tm_yday] for x in range(0, len(date_gen))]
     return {'id_days':id_jour}
 
@@ -165,11 +165,11 @@ def time_prep(firstdate, lastdate, step):
         if step == 'D':
             txunit = "days"
             dt = 86400
-            ndates = int(diffdate.days)
+            ndates = int(diffdate.days + 1)
         elif step == 'H':
             txunit = "hours"
             dt = 3600
-            ndates = int(diffdate.days * 24 + diffdate.seconds/3600)
+            ndates = int((diffdate.days + 1) * 24 + diffdate.seconds/3600)
         else:
             return None
 

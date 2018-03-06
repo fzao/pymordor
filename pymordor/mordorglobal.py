@@ -12,8 +12,9 @@ from ctypes import *
 import numpy as np
 
 NPMT = 150
-TMAX = 100000
+TMAX = 200000
 NSTOCK = 10
+NRES1 = 25
 LIBMORDOR = os.environ.get('LIBMORDOR')
 
 if sys.platform.startswith('linux'):
@@ -58,7 +59,7 @@ def prepparam(pmt, etagement, nstock, don, npas, cond):
     don2_ = don2.reshape(10, TMAX).transpose()
     cond2 = np.array(cond2_c)
 
-    return flag, pmt2, don2_, cond2
+    return{'flag':flag, 'pmt2':pmt2, 'don2':don2_, 'cond2':cond2}
 
 def initialisation(pmt, tnn, txn, cond):
     """ Data initialization of global Mordor """
@@ -85,5 +86,5 @@ def initialisation(pmt, tnn, txn, cond):
     etat_i = np.array(etat_ini_c)
     etat_ini = etat_i.reshape(NSTOCK, 8).transpose()
 
-    return flag, tpn, prep_kc, etat_ini
+    return{'flag':flag, 'tpn':tpn, 'prep_kc':prep_kc, 'etat_ini':etat_ini}
 
