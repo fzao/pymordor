@@ -40,7 +40,7 @@ def prepparam(pmt, etagement, nstock, don, npas, cond):
     etagement_c = (c_double*sizetab)(*etagement.reshape(sizetab, 1))
     sizetab = 5*npas
     don_c = (c_double*sizetab)(*don.reshape(sizetab, 1))
-    cond_c = (c_double*11)(*cond)
+    cond_c = (c_double*9)(*cond)
     flag_c = c_int()
     pmt2_c = (c_double*NPMT)(0.0)
     sizetab = 10*TMAX
