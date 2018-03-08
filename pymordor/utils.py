@@ -176,3 +176,38 @@ def time_prep(firstdate, lastdate, step):
     else:
         return None
     return{'dt':dt, 'date1':firstdate, 'date2':lastdate, 'txunit':txunit, 'ndates':ndates, 'step':step}
+    
+def cutarray(tab, firstdate, lastdate):
+    """
+    Extraction of data from a time series
+    :param tab: array of data
+    :param firstdate: date of the begining of the calculation (datetime format)
+    :param lastdate: date of the end of the calculation (datetime format)
+    :return: 1D-array of values between firstdate and lastdate (time series)
+    """
+    nc = tab.shape[1]
+    ndt = tab.shape[0]
+    # check that all the time steps are present
+    date1 = datetime.datetime(int(tab[0,0]), int(tab[0,1]), int(tab[0,2]), \
+            int(tab[0,3]), int(tab[0,4]))
+    date2 = datetime.datetime(int(tab[-1,0]), int(tab[-1,1]), int(tab[-1,2]), \
+            int(tab[-1,3]), int(tab[-1,4]))
+    datex = [date1 + datetime.timedelta(days=x) for x in range(0, (date2-date1).days+1)]
+    nbok = len(datex)
+    if nbok != ndt:
+        return None
+    if firstdate >= lastdate:
+        return None
+    # indices for cutting
+    i1 = 0
+    i2 = ndt - 1
+    for i in range(0, ndt):
+        datec = datetime.datetime(int(tab[i,0]), int(tab[i,1]), int(tab[i,2]), \
+            int(tab[i,3]), int(tab[i,4]))
+        if datec <= firstdate:
+            i1 = i
+        if datec <= lastdate:
+            i2 = i
+    # extracting results
+    return tab[i1:i2+1,5]
+
