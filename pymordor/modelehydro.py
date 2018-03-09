@@ -245,9 +245,13 @@ def getetatmodele(handlemodele):
     # calling the library
     valeur = MY_LIBRARY.GetEtatModele(handlemodele_c, byref(etatproduction_c), \
         byref(etattransfert_c), byref(bufferproduction_c), byref(qmoyen_c))
-    # return values in standard types
-    return valeur, etatproduction_c, etattransfert_c, bufferproduction_c, \
-        qmoyen_c
+    if valeur != 0:
+        return None
+    # return values in c_types
+    return{'etatproduction':etatproduction_c, \
+            'etattransfert':etattransfert_c, \
+            'bufferproduction':bufferproduction_c, \
+            'qmoyen': qmoyen_c}
 
 def getdateetat(handlemodele):
     """ Get the date associated with the state of the model """
