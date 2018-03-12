@@ -90,21 +90,21 @@ def runintercept(hm, temps, idmaille, idinter):
     state = {}
     state['etatproduction'] = etat['etatproduction'][0:dim_mod['nmailles']*8*10]
     state['etatproduction'] = np.asarray(state['etatproduction'])
-    state['etatproduction'] = state['etatproduction'].reshape(dim_mod['nmailles'] * 8, 10)
+    state['etatproduction'] = state['etatproduction'].reshape(10, dim_mod['nmailles'] * 8).transpose()
     state['etattransfert'] = etat['etattransfert'][0:dim_mod['nmailles']*dim_mod['nsortietransfert']]
     state['etattransfert'] = np.asarray(state['etattransfert'])
-    state['etattransfert'] = state['etattransfert'].reshape(dim_mod['nmailles'], dim_mod['nsortietransfert']) 
+    state['etattransfert'] = state['etattransfert'].reshape(dim_mod['nsortietransfert'], dim_mod['nmailles']).transpose() 
     state['bufferproduction'] = etat['bufferproduction'][0:dim_mod['nbuffer']*dim_mod['nmailles']]
     state['bufferproduction'] = np.asarray(state['bufferproduction'])
-    state['bufferproduction'] = state['bufferproduction'].reshape(dim_mod['nbuffer'], dim_mod['nmailles'])
+    state['bufferproduction'] = state['bufferproduction'].reshape(dim_mod['nmailles'], dim_mod['nbuffer']).transpose()
     state['qmoyen'] = etat['qmoyen'][0:dim_mod['nsortietransfert']]
     state['qmoyen'] = np.asarray(state['qmoyen'])
     # --> qsim
     qsim = np.array(qsim_c)
-    qsim = qsim.reshape(dim_mod['nsortietransfert'], temps['ndates'] - 1).transpose()
+    qsim = qsim.reshape(temps['ndates'] - 1, dim_mod['nsortietransfert'])
     # --> intercept
     inter = np.array(intercept_c)
-    inter = inter.reshape(len(idmaille) * len(idinter), temps['ndates'] - 1).transpose()
+    inter = inter.reshape(temps['ndates'] - 1, len(idmaille) * len(idinter))
     lnames = ["U","L","Z","N","sn","sns","tft","tst","Preciptot.","Tmin", \
          "Tmax","Tpn","ruiss","neige","pluie","accu","lglace","lfonte","frl", \
          "er","ep","fneige","rsurf","rvers","rbase","echNR","emax","Production"]

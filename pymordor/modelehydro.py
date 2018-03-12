@@ -176,22 +176,22 @@ def initmodele(handlemodele, tdeb, etatproductionzero, \
     tm[7] = tdeb.timetuple().tm_yday - 1
     tm[8] = tdeb.timetuple().tm_isdst
     tm_c = (c_double * 9)(*tm)
-    etatproductionzero = \
-        etatproductionzero.reshape(etatproductionzero.size, 1)
+    #etatproductionzero = \
+    #    etatproductionzero.reshape(etatproductionzero.size)
     sizetab = dimep1 * dimep2
-    etatproductionzero_c = (c_double * sizetab)(*etatproductionzero)
+    etatproductionzero_c = (c_double * sizetab)(*etatproductionzero.transpose().ravel())
     dimep1_c = c_int(dimep1)
     dimep2_c = c_int(dimep2)
     etattransfertzero = \
         etattransfertzero.reshape(etattransfertzero.size, 1)
     sizetab = dimet1 * dimet2
-    etattransfertzero_c = (c_double * sizetab)(*etattransfertzero)
+    etattransfertzero_c = (c_double * sizetab)(*etattransfertzero.transpose().ravel())
     dimet1_c = c_int(dimet1)
     dimet2_c = c_int(dimet2)
     bufferproductionzero = \
         bufferproductionzero.reshape(bufferproductionzero.size, 1)
     sizetab = dimbp1 * dimbp2
-    bufferproductionzero_c = (c_double * sizetab)(*bufferproductionzero)
+    bufferproductionzero_c = (c_double * sizetab)(*bufferproductionzero.transpose().ravel())
     dimbp1_c = c_int(dimbp1)
     dimbp2_c = c_int(dimbp2)
     # calling the library
