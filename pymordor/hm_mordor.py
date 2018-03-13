@@ -10,7 +10,7 @@
 import sys, os
 from ctypes import *
 import numpy as np
-from pymordor.modelehydro import getdimmodele, getetatmodele, detruiremodele
+from pymordor.modelehydro import getdimmodele, getetatmodele, creermodele, detruiremodele
 
 LIBMORDOR = os.environ.get('LIBMORDOR')
 
@@ -113,6 +113,36 @@ def runintercept(hm, temps, idmaille, idinter):
         intercept[lnames[i]] = inter[:, i*len(idmaille):(i+1)*len(idmaille)]
     return{'qsim':qsim, 'state':state, 'intercept':intercept}
 
+def create(temps, maillage, forc, inflow=None):
+    """
+    Instantiation of a new hm model
+    :param temps: dictionary with info on the computational times
+    :param maillage: dictionary of the hydrological mesh
+    :param forc: dictionary of associated inputs
+    :return: a new id number for the instantiation
+    """
+    if np.sum(forc['matpmt'][:,34]==0) > 0: # null velocity detected
+        return None
+    ptc = np.nonzero(maillage['contraintes'])
+    cnt = np.vstack((maillage['contraintes'][ptc], ptc[0]+1))
+    maillessortiestransfert = ptc[0]+1
+    jeumaille = np.asarray(list(range(1,maillage['nmailles']+1)))
+    injectionmaille = np.zeros((maillage['nmailles'],2))
+    wt = np.zeros((maillage['nmailles'], maillage['nmailles']))
+    np.fill_diagonal(wt, 1)
+    wt = np.vstack((wt, np.zeros((1, maillage['nmailles']))))
+    wp = wt
+    ndescript = 7
+    nsortietransfert = cnt.shape[1]
+    nparametres = 150
+    dimwp = maillage['nmailles'] * (maillage['nmailles'] + 1)
+    dimwt = dimwp
+    hm = creermodele("modele", maillage['nmailles'], maillage['topologie'], 
+        ndescript, maillage['descripteurs'], temps['dt'], nsortietransfert, maillessortiestransfert,
+        nparametres, forc['matpmt'].shape[0], forc['matpmt'], jeumaille, forc['hf'],
+        dimwp, dimwt, wp, wt, injectionmaille, forc['matkc'])
+    return hm
+    
 def delete(hm):
     """
     Free the memory associated with the instance number hm
