@@ -1,6 +1,6 @@
 *.pyc
 pymordor/__pycache__
-test_pymordor.py
+test_pymordor_clapiere_J.py
 data
 .idea
 desktop.ini
