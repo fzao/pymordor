@@ -15,11 +15,11 @@ __email__ = "fabrice.zaoui@edf.fr"
 __status__ = "Implementation"
 __version__ = "0.02"
 __all__ = ['litdonneesmodele', 'mordorglobal', 'modelehydro', 'utils', \
-            'hm_mordor']
+            'hm_mordor', 'hf_mordor']
 
 from pymordor import litdonneesmodele
 from pymordor import mordorglobal
 from pymordor import modelehydro
 from pymordor import utils
 from pymordor import hm_mordor
-
+from pymordor import hf_mordor

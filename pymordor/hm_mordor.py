@@ -10,7 +10,7 @@
 import sys, os
 from ctypes import *
 import numpy as np
-from pymordor.modelehydro import getdimmodele, getetatmodele
+from pymordor.modelehydro import getdimmodele, getetatmodele, detruiremodele
 
 LIBMORDOR = os.environ.get('LIBMORDOR')
 
@@ -113,3 +113,13 @@ def runintercept(hm, temps, idmaille, idinter):
         intercept[lnames[i]] = inter[:, i*len(idmaille):(i+1)*len(idmaille)]
     return{'qsim':qsim, 'state':state, 'intercept':intercept}
 
+def delete(hm):
+    """
+    Free the memory associated with the instance number hm
+    :param hm: id number of the hydrological model
+    :return: null value if success
+    """
+    value = detruiremodele(hm)
+    if value != 0:
+        return None
+    return value
