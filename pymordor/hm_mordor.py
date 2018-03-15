@@ -41,7 +41,7 @@ else:
 
 def runintercept(hm, temps, idmaille, idinter):
     """
-    Run the model and info on the states
+    Run the model and get info on the states
     :param hm: id number of the hydrological model
     :param temps: dictionary with info on the computational times
     :param idmaille: list of cells for the interceptions
@@ -113,6 +113,46 @@ def runintercept(hm, temps, idmaille, idinter):
         intercept[lnames[i]] = inter[:, i*len(idmaille):(i+1)*len(idmaille)]
     return{'qsim':qsim, 'state':state, 'intercept':intercept}
 
+def run(hm, temps):
+    """
+    Run the model
+    :param hm: id number of the hydrological model
+    :param temps: dictionary with info on the computational times
+    :return: a dictionary with
+    """
+    # get model sizes
+    dim_mod = getdimmodele(hm)
+    hm_c = c_int(hm)
+    # get time info
+    tfin = temps['date2']
+    tm = np.zeros((9, 1))
+    tm[0] = tfin.timetuple().tm_sec
+    tm[1] = tfin.timetuple().tm_min
+    tm[2] = tfin.timetuple().tm_hour
+    tm[3] = tfin.timetuple().tm_mday
+    tm[4] = tfin.timetuple().tm_mon - 1
+    tm[5] = tfin.timetuple().tm_year - 1850
+    tm[6] = tfin.timetuple().tm_wday + 1
+    tm[7] = tfin.timetuple().tm_yday - 1
+    tm[8] = tfin.timetuple().tm_isdst
+    if temps['dt'] == 86400:
+        tm[2] = 23
+    elif temps['dt'] == 3600:
+        tm[1] = 59
+    tm_c = (c_double * 9)(*tm)
+    # discharges
+    sizetab = dim_mod['nsortietransfert'] * (temps['ndates'] - 1)
+    qsim_c = (c_double * sizetab)(0.0)
+    # calling the library
+    valeur = MY_LIBRARY.hmRunMordor(hm_c, byref(tm_c), \
+        byref(qsim_c))
+    if valeur != 0:
+        return None
+    # --> qsim
+    qsim = np.array(qsim_c)
+    qsim = qsim.reshape(temps['ndates'] - 1, dim_mod['nsortietransfert'])
+    return{'qsim':qsim}
+    
 def create(temps, maillage, forc, inflow=None):
     """
     Instantiation of a new hm model
