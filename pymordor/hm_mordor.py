@@ -10,7 +10,7 @@
 import sys, os
 from ctypes import *
 import numpy as np
-from pymordor.modelehydro import getdimmodele, getetatmodele, creermodele, detruiremodele
+from pymordor.modelehydro import getdimmodele, getetatmodele, creermodele, initmodele, detruiremodele
 
 LIBMORDOR = os.environ.get('LIBMORDOR')
 
@@ -142,7 +142,23 @@ def create(temps, maillage, forc, inflow=None):
         nparametres, forc['matpmt'].shape[0], forc['matpmt'], jeumaille, forc['hf'],
         dimwp, dimwt, wp, wt, injectionmaille, forc['matkc'])
     return hm
-    
+
+def initialization(hm, temps, matini):
+    """
+    Initialization of the hydrological model hm
+    :param hm: id number of the hydrological model
+    :param temps: dictionary with info on the computational times
+    :param matini: matrix of init values
+    :return: null value if success
+    """
+    # get model sizes
+    dim_mod = getdimmodele(hm)
+    etattransfertzero = np.zeros((dim_mod['nmailles'], dim_mod['nsortietransfert']))
+    bufferproductionzero = np.zeros((dim_mod['nbuffer'], dim_mod['nmailles']))
+    # call the init method
+    valeur = initmodele(hm, temps['date1'], matini, etattransfertzero, bufferproductionzero)
+    return valeur
+
 def delete(hm):
     """
     Free the memory associated with the instance number hm
