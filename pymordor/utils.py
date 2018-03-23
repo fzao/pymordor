@@ -211,3 +211,23 @@ def cutarray(tab, firstdate, lastdate):
     # extracting results
     return tab[i1:i2+1,5]
 
+
+def upstream_list(maillage, id_exut):
+    """
+    upstream of id_exut
+    :param maillage: dictionary of the hydrological mesh
+    :param id_exut: outlet id number
+    :return: 1D-array of cell numbers
+    """
+    nmailles = range(1, maillage['nmailles']+1)
+    mailleamont = [id_exut]
+    recherche = [id_exut]
+    while len(recherche) > 0:
+        ajout = []
+        for i in range(0, len(recherche)):
+            im = recherche[i]
+            ajout.extend(np.take(nmailles, np.where(maillage['topologie']==im)).ravel().tolist())
+        mailleamont.extend(ajout)
+        recherche = ajout
+    return np.array(mailleamont)
+
