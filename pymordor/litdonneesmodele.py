@@ -103,7 +103,7 @@ def litmaillage(meshfile):
         descr = desc[0:nmailles, :]
         alt = np.array(alt_c)
         alti = alt.reshape(10, MAXCARREAU).transpose()
-        altit = alti[0:nmailles, :]
+        altit = alti[0:nmailles, 0:nbandes]
         nval = np.sum(cont > 0)
         cntr = np.zeros((nval, 2))
         k = 0
