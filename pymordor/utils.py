@@ -190,12 +190,13 @@ def time_prep(firstdate, lastdate, step):
            'txunit': txunit, 'ndates': ndates, 'step': step}
 
 
-def cutarray(tab, firstdate, lastdate):
+def cutarray(tab, firstdate, lastdate, txunit):
     """
     Extraction of data from a time series
     :param tab: array of data
     :param firstdate: date of the begining of the calculation (datetime format)
     :param lastdate: date of the end of the calculation (datetime format)
+    :param txunit: time step 'days' or 'hours'
     :return: 1D-array of values between firstdate and lastdate (time series)
     """
     nc = tab.shape[1]
@@ -206,16 +207,21 @@ def cutarray(tab, firstdate, lastdate):
     date2 = datetime.datetime(int(tab[-1, 0]), int(tab[-1, 1]),
                               int(tab[-1, 2]), int(tab[-1, 3]),
                               int(tab[-1, 4]))
-    datex = [date1 + datetime.timedelta(days=x)
-             for x in range(0, (date2-date1).days+1)]
-    nbok = len(datex)
+    if date2 <= date1:
+        return None
+    else:
+        delta = date2 - date1
+    if txunit == 'days':
+        nbok = delta.days + 1
+    elif txunit == 'hours':
+        nbok = int(delta.days*24 + delta.seconds/3600 + 1)
     if nbok != ndt:
         return None
     if firstdate >= lastdate:
         return None
     # indices for cutting
     i1 = 0
-    i2 = ndt - 1
+    i2 = ndt
     for i in range(0, ndt):
         datec = datetime.datetime(int(tab[i, 0]), int(tab[i, 1]),
                                   int(tab[i, 2]), int(tab[i, 3]),
@@ -225,7 +231,7 @@ def cutarray(tab, firstdate, lastdate):
         if datec <= lastdate:
             i2 = i
     # extracting results
-    return tab[i1:i2+1, 5]
+    return tab[i1:i2, 5]
 
 
 def upstream_list(maillage, id_exut):
