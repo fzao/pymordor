@@ -11,6 +11,7 @@
 import datetime
 import numpy as np
 
+
 def lambert2geo(x, y):
     """
     Change Lambert II coordinates (x,y) (m) into geographical \
@@ -28,7 +29,7 @@ def lambert2geo(x, y):
     DELTA = 0.040792344
     r = np.sqrt(np.power(x-XS, 2)+np.power(y-YS, 2))
     g = np.arctan((x-XS)/(YS-y))
-    longitude = DELTA + g/N #  radians !
+    longitude = DELTA + g/N  # radians !
     lambert = (-1.0/N)*np.log(np.abs(r/C))
     p = np.pi*42.0/180.0    # starting value
     f = 0.0
@@ -47,7 +48,8 @@ def lambert2geo(x, y):
         v = p
         p = p-0.0001*o/(q-o)
     latitude = p
-    return {'longitude':longitude, 'latitude':latitude}
+    return {'longitude': longitude, 'latitude': latitude}
+
 
 def datenum(date):
     """
@@ -64,14 +66,14 @@ def datenum(date):
     seconde = date[5]
     rep = ((np.mod(annee, 100) != 0) & (np.mod(annee, 4) == 0)) \
         | (np.mod(annee, 400) == 0)
-    decimal_part = (seconde * (1. /(24. * 3600.))) + \
+    decimal_part = (seconde * (1. / (24. * 3600.))) + \
         (mn * (1. / (24. * 60.))) + (heure * (1. / 24.))
     # convert of month and day
     integer_part = jour + np.floor((mois * 3057. - 3007.) / 100.)
     # Beyond February
     integer_part = integer_part + ((mois < 3) - 1)
     # Beyond February and non leap year
-    integer_part = integer_part + (((mois < 3) | (rep)) -1);
+    integer_part = integer_part + (((mois < 3) | (rep)) - 1)
     # Conversion of years
     leap_year_case = annee * 365. + (annee / 4.) - np.floor(annee / 100.) +\
         np.floor(annee / 400.)
@@ -85,7 +87,8 @@ def datenum(date):
         leap_year_case = 0
     integer_part = integer_part + leap_year_case + not_leap_year_case
     scalaire = integer_part + decimal_part
-    return {'scalar':scalaire}
+    return {'scalar': scalaire}
+
 
 def datevec(n):
     """
@@ -104,13 +107,13 @@ def datevec(n):
     # year
     n = np.floor(n)
     year = np.floor(n / 365.2425)
-    temp = n - (365.0 * year + np.ceil(0.25 * year) - \
-        np.ceil(0.01 * year) + np.ceil(0.0025 * year))
+    temp = n - (365.0 * year + np.ceil(0.25 * year) -
+                np.ceil(0.01 * year) + np.ceil(0.0025 * year))
     mask = (temp <= 0)
     if mask:
         year = year - 1
-        n = n - (365.0 * year + np.ceil(0.25 * year) - \
-        np.ceil(0.01 * year) + np.ceil(0.0025 * year))
+        n = n - (365.0 * year + np.ceil(0.25 * year) -
+                 np.ceil(0.01 * year) + np.ceil(0.0025 * year))
     else:
         n = temp
     # month
@@ -135,7 +138,9 @@ def datevec(n):
     h = int(hour)
     m = int(minute)
     s = second
-    return {'year':y, 'month':mo, 'day':d, 'hour':h, 'minute':m, 'second':s}
+    return {'year': y, 'month': mo, 'day': d,
+            'hour': h, 'minute': m, 'second': s}
+
 
 def calcidjour(datedeb, datefin):
     """
@@ -148,19 +153,25 @@ def calcidjour(datedeb, datefin):
     :param datefin: end date (datetime format)
     :return: number of days
     """
-    date_gen = [datedeb + datetime.timedelta(days=x) for x in range(0, (datefin-datedeb).days+1)]
-    id_jour= [[date_gen[x].timetuple().tm_yday] for x in range(0, len(date_gen))]
-    return {'id_days':id_jour}
+    date_gen = [datedeb + datetime.timedelta(days=x)
+                for x in range(0, (datefin-datedeb).days+1)]
+    id_jour = [[date_gen[x].timetuple().tm_yday]
+               for x in range(0, len(date_gen))]
+    return {'id_days': id_jour}
+
 
 def time_prep(firstdate, lastdate, step):
     """
     Preparation of information on the calculation times
     :param firstdate: date of the begining of the calculation (datetime format)
     :param lastdate: date of the end of the calculation (datetime format)
-    :param step: a character indicating the calculation step ('J' for days and 'H' for 'hours')
-    :return: a dictionary of global information including the time period value ('ndates')
+    :param step: a character indicating the calculation step
+                ('J' for days and 'H' for 'hours')
+    :return: a dictionary of global information including the time period value
+            ('ndates')
     """
-    if isinstance(firstdate, datetime.datetime) & isinstance(lastdate, datetime.datetime):
+    if isinstance(firstdate, datetime.datetime) & \
+       isinstance(lastdate, datetime.datetime):
         diffdate = lastdate - firstdate
         if step == 'D':
             txunit = "days"
@@ -169,14 +180,16 @@ def time_prep(firstdate, lastdate, step):
         elif step == 'H':
             txunit = "hours"
             dt = 3600
-            ndates = int((diffdate.days + 1) * 24 + diffdate.seconds/3600)
+            ndates = int(diffdate.days * 24 + diffdate.seconds/3600)
         else:
             return None
 
     else:
         return None
-    return{'dt':dt, 'date1':firstdate, 'date2':lastdate, 'txunit':txunit, 'ndates':ndates, 'step':step}
-    
+    return{'dt': dt, 'date1': firstdate, 'date2': lastdate,
+           'txunit': txunit, 'ndates': ndates, 'step': step}
+
+
 def cutarray(tab, firstdate, lastdate):
     """
     Extraction of data from a time series
@@ -188,11 +201,13 @@ def cutarray(tab, firstdate, lastdate):
     nc = tab.shape[1]
     ndt = tab.shape[0]
     # check that all the time steps are present
-    date1 = datetime.datetime(int(tab[0,0]), int(tab[0,1]), int(tab[0,2]), \
-            int(tab[0,3]), int(tab[0,4]))
-    date2 = datetime.datetime(int(tab[-1,0]), int(tab[-1,1]), int(tab[-1,2]), \
-            int(tab[-1,3]), int(tab[-1,4]))
-    datex = [date1 + datetime.timedelta(days=x) for x in range(0, (date2-date1).days+1)]
+    date1 = datetime.datetime(int(tab[0, 0]), int(tab[0, 1]), int(tab[0, 2]),
+                              int(tab[0, 3]), int(tab[0, 4]))
+    date2 = datetime.datetime(int(tab[-1, 0]), int(tab[-1, 1]),
+                              int(tab[-1, 2]), int(tab[-1, 3]),
+                              int(tab[-1, 4]))
+    datex = [date1 + datetime.timedelta(days=x)
+             for x in range(0, (date2-date1).days+1)]
     nbok = len(datex)
     if nbok != ndt:
         return None
@@ -202,14 +217,15 @@ def cutarray(tab, firstdate, lastdate):
     i1 = 0
     i2 = ndt - 1
     for i in range(0, ndt):
-        datec = datetime.datetime(int(tab[i,0]), int(tab[i,1]), int(tab[i,2]), \
-            int(tab[i,3]), int(tab[i,4]))
+        datec = datetime.datetime(int(tab[i, 0]), int(tab[i, 1]),
+                                  int(tab[i, 2]), int(tab[i, 3]),
+                                  int(tab[i, 4]))
         if datec <= firstdate:
             i1 = i
         if datec <= lastdate:
             i2 = i
     # extracting results
-    return tab[i1:i2+1,5]
+    return tab[i1:i2+1, 5]
 
 
 def upstream_list(maillage, id_exut):
@@ -226,8 +242,9 @@ def upstream_list(maillage, id_exut):
         ajout = []
         for i in range(0, len(recherche)):
             im = recherche[i]
-            ajout.extend(np.take(nmailles, np.where(maillage['topologie']==im)).ravel().tolist())
+            ajout.extend(np.take(nmailles,
+                         np.where(maillage['topologie'] == im))
+                         .ravel().tolist())
         mailleamont.extend(ajout)
         recherche = ajout
     return np.array(mailleamont)
-
