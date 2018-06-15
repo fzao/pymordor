@@ -142,7 +142,7 @@ def datevec(n):
             'hour': h, 'minute': m, 'second': s}
 
 
-def calcidjour(datedeb, datefin):
+def calcidjour(datedeb, datefin, txunit):
     """
     Gives the number of the day of the year for all the days between two dates
     ex.:
@@ -153,10 +153,18 @@ def calcidjour(datedeb, datefin):
     :param datefin: end date (datetime format)
     :return: number of days
     """
-    date_gen = [datedeb + datetime.timedelta(days=x)
-                for x in range(0, (datefin-datedeb).days+1)]
-    id_jour = [[date_gen[x].timetuple().tm_yday]
-               for x in range(0, len(date_gen))]
+    delta = datefin - datedeb
+    if txunit == 'days':
+        longueur = delta.days + 1
+        date_gen = [datedeb + datetime.timedelta(days=x)
+                    for x in range(0, longueur)]
+    elif txunit == 'hours':
+        longueur = delta.days*24+delta.seconds/3600 + 1
+        longueur = int(longueur)
+        date_gen = [datedeb + datetime.timedelta(seconds=3600*x)
+                    for x in range(0, longueur)]
+    id_jour = [[date_gen[x].timetuple().tm_yday] for x in range(0, longueur)]
+
     return {'id_days': id_jour}
 
 
@@ -180,7 +188,7 @@ def time_prep(firstdate, lastdate, step):
         elif step == 'H':
             txunit = "hours"
             dt = 3600
-            ndates = int(diffdate.days * 24 + diffdate.seconds/3600)
+            ndates = int(diffdate.days * 24 + diffdate.seconds/3600 + 1)
         else:
             return None
 

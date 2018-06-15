@@ -56,7 +56,7 @@ def create(temps, maillage, meteo, etat0, param, tabinj=None):
     if hf < 0:
         return None
     nech = etat0[0]
-    id_jour = calcidjour(temps['date1'], temps['date2'])
+    id_jour = calcidjour(temps['date1'], temps['date2'], temps['txunit'])
     matini = np.zeros((8, maillage['nbandes']*10))
     i = 0
     p = meteo['rain'][0:temps['ndates'],i].reshape(temps['ndates'],1)
@@ -114,7 +114,7 @@ def create(temps, maillage, meteo, etat0, param, tabinj=None):
     if maillage['nqinj'] > 0:
         for i in range(0, maillage['nqinj']):
             val = remplirsiteforcage(hf, 5, i+1, temps['ndates'], tabinj)
-            
+
     forc = {'hf':hf, 'prep':prep, 'matpmt':matpmt, 'matkc':matkc, 'matini':matini}
     return forc
 
@@ -133,7 +133,7 @@ def create_multi(temps, maillage, meteo, etat0, matparam, tabinj=None):
     if hf < 0:
         return None
     nech = etat0[0]
-    id_jour = calcidjour(temps['date1'], temps['date2'])
+    id_jour = calcidjour(temps['date1'], temps['date2'], temps['txunit'])
     matini = np.zeros((8, maillage['nbandes']*10))
     i = 0
     p = meteo['rain'][0:temps['ndates'],i].reshape(temps['ndates'],1)
@@ -193,7 +193,7 @@ def create_multi(temps, maillage, meteo, etat0, matparam, tabinj=None):
     if maillage['nqinj'] > 0:
         for i in range(0, maillage['nqinj']):
             val = remplirsiteforcage(hf, 5, i+1, temps['ndates'], tabinj)
-            
+
     forc = {'hf':hf, 'prep':prep, 'matpmt':matpmt, 'matkc':matkc, 'matini':matini}
     return forc
 
