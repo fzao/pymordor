@@ -7,10 +7,12 @@
     Copyright EDF 2016-2018
 
 """
-import sys, os
+import sys
+import os
 from ctypes import *
 import numpy as np
-from pymordor.modelehydro import getdimmodele, getetatmodele, creermodele, initmodele, detruiremodele
+from pymordor.modelehydro import getdimmodele, getetatmodele, creermodele,\
+                            initmodele, detruiremodele
 
 LIBMORDOR = os.environ.get('LIBMORDOR')
 
@@ -27,17 +29,18 @@ libRunMordorTS.so. Check the environmental variable LIBMORDOR.')
 libWrapperModeleHydro.so. Check the environmental variable LIBMORDOR.')
 elif sys.platform.startswith('win'):
     try:
-        MY_LIBRARY0 = CDLL(LIBMORDOR+'\libRunMordorTS.dll')
+        MY_LIBRARY0 = CDLL(LIBMORDOR+'\\libRunMordorTS.dll')
     except Exception:
         raise Exception('unable to load the dynamic library: \
 libRunMordorTS.dll. Check the environmental variable LIBMORDOR.')
     try:
-        MY_LIBRARY = CDLL(LIBMORDOR+'\libWrapperModeleHydro.dll')
+        MY_LIBRARY = CDLL(LIBMORDOR+'\\libWrapperModeleHydro.dll')
     except Exception:
         raise Exception('unable to load the dynamic library: \
 libWrapperModeleHydro.dll. Check the environmental variable LIBMORDOR.')
 else:
     raise Exception(u'unsupported OS')
+
 
 def runintercept(hm, temps, idmaille, idinter):
     """
@@ -77,26 +80,34 @@ def runintercept(hm, temps, idmaille, idinter):
     qsim_c = (c_double * sizetab)(0.0)
     # interceptions
     sizetab = len(idmaille) * len(idinter) * (temps['ndates'] - 1)
-    #intercept = np.zeros((len(idmaille) * len(idinter) * (temps['ndates'] - 1), 1))
     intercept_c = (c_double * sizetab)(0.0)
     # calling the library
-    valeur = MY_LIBRARY.hmRunMordorIntercept(hm_c, byref(tm_c), nmailinter_c, \
-        byref(idmaille_c), nintercept_c, byref(idinter_c), \
-        byref(qsim_c), byref(intercept_c))
+    valeur = MY_LIBRARY.hmRunMordorIntercept(hm_c, byref(tm_c), nmailinter_c,
+                                             byref(idmaille_c), nintercept_c,
+                                             byref(idinter_c),
+                                             byref(qsim_c), byref(intercept_c))
     if valeur != 0:
         return None
     # --> state
     etat = getetatmodele(hm)
     state = {}
-    state['etatproduction'] = etat['etatproduction'][0:dim_mod['nmailles']*8*10]
+    state['etatproduction'] = \
+        etat['etatproduction'][0:dim_mod['nmailles']*8*10]
     state['etatproduction'] = np.asarray(state['etatproduction'])
-    state['etatproduction'] = state['etatproduction'].reshape(10, dim_mod['nmailles'] * 8).transpose()
-    state['etattransfert'] = etat['etattransfert'][0:dim_mod['nmailles']*dim_mod['nsortietransfert']]
+    state['etatproduction'] = state['etatproduction']\
+        .reshape(10, dim_mod['nmailles'] * 8).transpose()
+    state['etattransfert'] = \
+        etat['etattransfert'][0:dim_mod['nmailles']
+                              * dim_mod['nsortietransfert']]
     state['etattransfert'] = np.asarray(state['etattransfert'])
-    state['etattransfert'] = state['etattransfert'].reshape(dim_mod['nsortietransfert'], dim_mod['nmailles']).transpose() 
-    state['bufferproduction'] = etat['bufferproduction'][0:dim_mod['nbuffer']*dim_mod['nmailles']]
+    state['etattransfert'] = state['etattransfert']\
+        .reshape(dim_mod['nsortietransfert'], dim_mod['nmailles']).transpose()
+    state['bufferproduction'] = \
+        etat['bufferproduction'][0:dim_mod['nbuffer']*dim_mod['nmailles']]
     state['bufferproduction'] = np.asarray(state['bufferproduction'])
-    state['bufferproduction'] = state['bufferproduction'].reshape(dim_mod['nmailles'], dim_mod['nbuffer']).transpose()
+    state['bufferproduction'] = \
+        state['bufferproduction'].reshape(dim_mod['nmailles'],
+                                          dim_mod['nbuffer']).transpose()
     state['qmoyen'] = etat['qmoyen'][0:dim_mod['nsortietransfert']]
     state['qmoyen'] = np.asarray(state['qmoyen'])
     # --> qsim
@@ -105,13 +116,15 @@ def runintercept(hm, temps, idmaille, idinter):
     # --> intercept
     inter = np.array(intercept_c)
     inter = inter.reshape(temps['ndates'] - 1, len(idmaille) * len(idinter))
-    lnames = ["U","L","Z","N","sn","sns","tft","tst","Preciptot.","Tmin", \
-         "Tmax","Tpn","ruiss","neige","pluie","accu","lglace","lfonte","frl", \
-         "er","ep","fneige","rsurf","rvers","rbase","echNR","emax","Production"]
+    lnames = ["U", "L", "Z", "N", "sn", "sns", "tft", "tst", "Preciptot.",
+              "Tmin", "Tmax", "Tpn", "ruiss", "neige", "pluie", "accu",
+              "lglace", "lfonte", "frl", "er", "ep", "fneige", "rsurf",
+              "rvers", "rbase", "echNR", "emax", "Production"]
     intercept = {}
     for i in range(0, len(idinter)):
         intercept[lnames[i]] = inter[:, i*len(idmaille):(i+1)*len(idmaille)]
-    return{'qsim':qsim, 'state':state, 'intercept':intercept}
+    return{'qsim': qsim, 'state': state, 'intercept': intercept}
+
 
 def run(hm, temps):
     """
@@ -144,15 +157,15 @@ def run(hm, temps):
     sizetab = dim_mod['nsortietransfert'] * (temps['ndates'] - 1)
     qsim_c = (c_double * sizetab)(0.0)
     # calling the library
-    valeur = MY_LIBRARY.hmRunMordor(hm_c, byref(tm_c), \
-        byref(qsim_c))
+    valeur = MY_LIBRARY.hmRunMordor(hm_c, byref(tm_c), byref(qsim_c))
     if valeur != 0:
         return None
     # --> qsim
     qsim = np.array(qsim_c)
     qsim = qsim.reshape(temps['ndates'] - 1, dim_mod['nsortietransfert'])
-    return{'qsim':qsim}
-    
+    return{'qsim': qsim}
+
+
 def create(temps, maillage, forc, inflow=None):
     """
     Instantiation of a new hm model
@@ -161,13 +174,13 @@ def create(temps, maillage, forc, inflow=None):
     :param forc: dictionary of associated inputs
     :return: a new id number for the instantiation
     """
-    if np.sum(forc['matpmt'][:,34]==0) > 0: # null velocity detected
+    if np.sum(forc['matpmt'][:, 34] == 0) > 0:  # null velocity detected
         return None
     ptc = np.nonzero(maillage['contraintes'])
     cnt = np.vstack((maillage['contraintes'][ptc], ptc[0]+1))
     maillessortiestransfert = ptc[0]+1
-    jeumaille = np.asarray(list(range(1,maillage['nmailles']+1)))
-    injectionmaille = np.zeros((maillage['nmailles'],2))
+    jeumaille = np.asarray(list(range(1, maillage['nmailles']+1)))
+    injectionmaille = np.zeros((maillage['nmailles'], 2))
     wt = np.zeros((maillage['nmailles'], maillage['nmailles']))
     np.fill_diagonal(wt, 1)
     wt = np.vstack((wt, np.zeros((1, maillage['nmailles']))))
@@ -177,11 +190,14 @@ def create(temps, maillage, forc, inflow=None):
     nparametres = 150
     dimwp = maillage['nmailles'] * (maillage['nmailles'] + 1)
     dimwt = dimwp
-    hm = creermodele("modele", maillage['nmailles'], maillage['topologie'], 
-        ndescript, maillage['descripteurs'], temps['dt'], nsortietransfert, maillessortiestransfert,
-        nparametres, forc['matpmt'].shape[0], forc['matpmt'], jeumaille, forc['hf'],
-        dimwp, dimwt, wp, wt, injectionmaille, forc['matkc'])
+    hm = creermodele("modele", maillage['nmailles'], maillage['topologie'],
+                     ndescript, maillage['descripteurs'], temps['dt'],
+                     nsortietransfert, maillessortiestransfert,
+                     nparametres, forc['matpmt'].shape[0], forc['matpmt'],
+                     jeumaille, forc['hf'], dimwp, dimwt, wp, wt,
+                     injectionmaille, forc['matkc'])
     return hm
+
 
 def initialization(hm, temps, matini):
     """
@@ -193,11 +209,14 @@ def initialization(hm, temps, matini):
     """
     # get model sizes
     dim_mod = getdimmodele(hm)
-    etattransfertzero = np.zeros((dim_mod['nmailles'], dim_mod['nsortietransfert']))
+    etattransfertzero = np.zeros((dim_mod['nmailles'],
+                                  dim_mod['nsortietransfert']))
     bufferproductionzero = np.zeros((dim_mod['nbuffer'], dim_mod['nmailles']))
     # call the init method
-    valeur = initmodele(hm, temps['date1'], matini, etattransfertzero, bufferproductionzero)
+    valeur = initmodele(hm, temps['date1'], matini, etattransfertzero,
+                        bufferproductionzero)
     return valeur
+
 
 def delete(hm):
     """

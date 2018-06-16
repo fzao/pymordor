@@ -7,7 +7,8 @@
     Copyright EDF 2016-2018
 
 """
-import sys, os
+import sys
+import os
 from ctypes import *
 import numpy as np
 
@@ -25,12 +26,13 @@ if sys.platform.startswith('linux'):
 libLitDonneesModele.so. Check the environmental variable LIBMORDOR.')
 elif sys.platform.startswith('win'):
     try:
-        MY_LIBRARY = CDLL(LIBMORDOR+'\libLitDonneesModele.dll')
+        MY_LIBRARY = CDLL(LIBMORDOR+'\\libLitDonneesModele.dll')
     except Exception:
         raise Exception('unable to load the dynamic library: \
 libLitDonneesModele.dll. Check the environmental variable LIBMORDOR.')
 else:
     raise Exception(u'unsupported OS')
+
 
 def litpostes(postfile):
     """
@@ -49,8 +51,9 @@ def litpostes(postfile):
         nompostes_c = (c_char * sizetab)()
         fichpostes_c = (c_char * sizetab)()
         # Calling the library
-        MY_LIBRARY.lit_postes(byref(u_c), adresse_c, byref(npostes_c), \
-               byref(carapostes_c), byref(nompostes_c), byref(fichpostes_c))
+        MY_LIBRARY.lit_postes(byref(u_c), adresse_c, byref(npostes_c),
+                              byref(carapostes_c), byref(nompostes_c),
+                              byref(fichpostes_c))
         # Return values in standard types
         npostes = npostes_c.value
         car = np.array(carapostes_c)
@@ -66,14 +69,17 @@ def litpostes(postfile):
         fic = fic.replace("'", "")
         fich = fic.replace("\\n", " ")
         fiche = fich.split()
-        return {'npostes':npostes, 'carapostes':carac, 'nompostes':nompos, 'fichpostes':fiche}
+        return {'npostes': npostes, 'carapostes': carac, 'nompostes': nompos,
+                'fichpostes': fiche}
     else:
         return None
+
 
 def litmaillage(meshfile):
     """
     Read the mesh of the watershed (Carreau format)
-    :param meshfile: the name (string char) of the file defining the hydrological mesh
+    :param meshfile: the name (string char) of the file defining
+                        the hydrological mesh
     :return: a dictionary of information on the mesh
     """
     if os.path.isfile(meshfile):
@@ -89,8 +95,11 @@ def litmaillage(meshfile):
         sizevar = 10 * MAXCARREAU
         alt_c = (c_double * sizevar)(0.0)
         # Calling the library
-        MY_LIBRARY.lit_maillage_bandes(byref(u_c), adresse_c, byref(nmailles_c), byref(nbandes_c), \
-               byref(topologie_c), byref(descripteurs_c), byref(contraintes_c), byref(alt_c))
+        MY_LIBRARY.lit_maillage_bandes(byref(u_c), adresse_c,
+                                       byref(nmailles_c), byref(nbandes_c),
+                                       byref(topologie_c),
+                                       byref(descripteurs_c),
+                                       byref(contraintes_c), byref(alt_c))
         # Return values in standard types
         nmailles = nmailles_c.value
         nbandes = nbandes_c.value
@@ -112,10 +121,12 @@ def litmaillage(meshfile):
                 cntr[k, 0] = i+1
                 cntr[k, 1] = cont[i]
                 k = k + 1
-        return {'nmailles': nmailles, 'nbandes': nbandes, 'topologie': topo, 'descripteurs': descr, \
-                'contraintes': cont, 'altitudes': altit, 'cntr':cntr}
+        return {'nmailles': nmailles, 'nbandes': nbandes, 'topologie': topo,
+                'descripteurs': descr,
+                'contraintes': cont, 'altitudes': altit, 'cntr': cntr}
     else:
         return None
+
 
 def litcontraintes(confile):
     """
@@ -136,8 +147,10 @@ def litcontraintes(confile):
         noms_c = (c_char * sizetab)()
         fichiers_c = (c_char * sizetab)()
         # calling the library
-        MY_LIBRARY.lit_contraintes(byref(u_c), adresse_c, byref(ncontraintes_c), \
-           byref(xy_c), byref(typec_c), byref(noms_c), byref(fichiers_c))
+        MY_LIBRARY.lit_contraintes(byref(u_c), adresse_c,
+                                   byref(ncontraintes_c),
+                                   byref(xy_c), byref(typec_c),
+                                   byref(noms_c), byref(fichiers_c))
         # Return values in standard types
         ncontraintes = ncontraintes_c.value
         xy_ = np.array(xy_c)
@@ -158,9 +171,11 @@ def litcontraintes(confile):
         fic = fic.replace("'", "")
         fich = fic.replace("\\n", " ")
         fiche = fich.split()
-        return {'ncontraintes':ncontraintes, 'xy':xy___, 'typec':typec, 'noms':noms, 'fichiers':fiche}
+        return {'ncontraintes': ncontraintes, 'xy': xy___, 'typec': typec,
+                'noms': noms, 'fichiers': fiche}
     else:
         return None
+
 
 def litficmeteo(rep, temps, nom_bv):
     """
@@ -168,7 +183,8 @@ def litficmeteo(rep, temps, nom_bv):
     :param rep: the folder where are located the files of the weather
     :param temps: a dictionary concerning the calculation times
     :param nom_bv: name of the watershed
-    :return: a dictionary containing values for the rain and the temperatures for all the period
+    :return: a dictionary containing values for the rain and the temperatures
+                for all the period
     """
     # Folders and filenames
     reprain = rep + "/Meteo/Precip/"
@@ -194,11 +210,11 @@ def litficmeteo(rep, temps, nom_bv):
     tmin = np.loadtxt(filetmin)
     filetmax = radtmax + "_" + str(a1) + ".txt"
     tmax = np.loadtxt(filetmax)
-    for i in list(range(a1+1,a2+1)):
+    for i in list(range(a1+1, a2+1)):
         filerain = radrain + "_" + str(i) + ".txt"
         rain = np.vstack((rain, np.loadtxt(filerain)))
         filetmin = radtmin + "_" + str(i) + ".txt"
         tmin = np.vstack((tmin, np.loadtxt(filetmin)))
         filetmax = radtmax + "_" + str(i) + ".txt"
         tmax = np.vstack((tmax, np.loadtxt(filetmax)))
-    return {'rain':rain, 'tmin':tmin, 'tmax':tmax}
+    return {'rain': rain, 'tmin': tmin, 'tmax': tmax}

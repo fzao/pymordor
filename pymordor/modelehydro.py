@@ -7,7 +7,8 @@
     Copyright EDF 2016-2018
 
 """
-import sys, os
+import sys
+import os
 from ctypes import *
 import numpy as np
 
@@ -26,20 +27,21 @@ libRunMordorTS.so. Check the environmental variable LIBMORDOR.')
 libWrapperModeleHydro.so. Check the environmental variable LIBMORDOR.')
 elif sys.platform.startswith('win'):
     try:
-        MY_LIBRARY0 = CDLL(LIBMORDOR+'\libRunMordorTS.dll')
+        MY_LIBRARY0 = CDLL(LIBMORDOR+'\\libRunMordorTS.dll')
     except Exception:
         raise Exception('unable to load the dynamic library: \
 libRunMordorTS.dll. Check the environmental variable LIBMORDOR.')
     try:
-        MY_LIBRARY = CDLL(LIBMORDOR+'\libWrapperModeleHydro.dll')
+        MY_LIBRARY = CDLL(LIBMORDOR+'\\libWrapperModeleHydro.dll')
     except Exception:
         raise Exception('unable to load the dynamic library: \
 libWrapperModeleHydro.dll. Check the environmental variable LIBMORDOR.')
 else:
     raise Exception(u'unsupported OS')
 
-def creerbaseforcage(nom, npluvio, carapluvio, nmeteo, carameteo, nqinj, \
-                ndates, tdeb, dt0):
+
+def creerbaseforcage(nom, npluvio, carapluvio, nmeteo, carameteo, nqinj,
+                     ndates, tdeb, dt0):
     """ handle of weather inputs """
     # Data preparation in ctype format
     nom_c = c_char_p(nom.encode())
@@ -66,14 +68,17 @@ def creerbaseforcage(nom, npluvio, carapluvio, nmeteo, carameteo, nqinj, \
     tm_c = (c_double * 9)(*tm)
     dt_c = c_double(dt0)
     # calling the library
-    valeur = MY_LIBRARY.CreerBaseForcage(nom_c, npluvio_c, \
-        byref(carapluvio_c), \
-        nmeteo_c, byref(carameteo_c), nqinj_c, ndates_c, \
-        byref(tm_c), dt_c)
+    valeur = MY_LIBRARY.CreerBaseForcage(nom_c, npluvio_c,
+                                         byref(carapluvio_c),
+                                         nmeteo_c, byref(carameteo_c),
+                                         nqinj_c, ndates_c,
+                                         byref(tm_c), dt_c)
     # return values in standard types
     return valeur
 
-def remplirsiteforcage(handleforcage, numfeuille, numsite, ndates, valeurssite):
+
+def remplirsiteforcage(handleforcage, numfeuille, numsite,
+                       ndates, valeurssite):
     """ Copy of the time series to the required site """
     # Data preparation in ctype format
     handleforcage_c = c_int(handleforcage)
@@ -82,19 +87,22 @@ def remplirsiteforcage(handleforcage, numfeuille, numsite, ndates, valeurssite):
     ndates_c = c_int(ndates)
     valeurssite_c = (c_double * ndates)(*valeurssite)
     # calling the library
-    valeur = MY_LIBRARY.RemplirSiteForcage(handleforcage_c, numfeuille_c, \
-        numsite_c, ndates_c, byref(valeurssite_c))
+    valeur = MY_LIBRARY.RemplirSiteForcage(handleforcage_c, numfeuille_c,
+                                           numsite_c, ndates_c,
+                                           byref(valeurssite_c))
     # return values in standard types
     return valeur
 
-def creermodele(nom, nmailles, topologiemailles, ndescript, \
-    descripteursmailles, dt0, nsortietransfert, maillesortietransfert, \
-    nparametres, njeux, matriceparametres, jeumaille, handleforcage, \
-    dimregpj, dimregtj, regpj, regtj, tabinject, matricekc):
+
+def creermodele(nom, nmailles, topologiemailles, ndescript,
+                descripteursmailles, dt0, nsortietransfert,
+                maillesortietransfert, nparametres, njeux, matriceparametres,
+                jeumaille, handleforcage, dimregpj, dimregtj, regpj, regtj,
+                tabinject, matricekc):
     """ Handle of weather inputs """
     # Data preparation in ctype format
     descripteursmailles = \
-        descripteursmailles.transpose().reshape(descripteursmailles.size,1)
+        descripteursmailles.transpose().reshape(descripteursmailles.size, 1)
     regpj = regpj.transpose().reshape(regpj.size, 1)
     regtj = regtj.transpose().reshape(regtj.size, 1)
     tabinject = tabinject.transpose().reshape(tabinject.size, 1)
@@ -125,15 +133,21 @@ def creermodele(nom, nmailles, topologiemailles, ndescript, \
     sizetab = 366 * nmailles
     matricekc_c = (c_double * sizetab)(*matricekc)
     # calling the library
-    valeur = MY_LIBRARY.CreerModele(nom_c, nmailles_c, \
-        byref(topologiemailles_c), ndescript_c, byref(descripteursmailles_c), \
-        dt_c, nsortietransfert_c, byref(maillesortietransfert_c), \
-        nparametres_c, njeux_c, byref(matriceparametres_c), \
-        byref(jeumaille_c), handleforcage_c, dimregpj_c, dimregtj_c, \
-        byref(regpj_c), byref(regtj_c), byref(tabinject_c), \
-        byref(matricekc_c))
+    valeur = MY_LIBRARY.CreerModele(nom_c, nmailles_c,
+                                    byref(topologiemailles_c), ndescript_c,
+                                    byref(descripteursmailles_c),
+                                    dt_c, nsortietransfert_c,
+                                    byref(maillesortietransfert_c),
+                                    nparametres_c, njeux_c,
+                                    byref(matriceparametres_c),
+                                    byref(jeumaille_c), handleforcage_c,
+                                    dimregpj_c, dimregtj_c,
+                                    byref(regpj_c), byref(regtj_c),
+                                    byref(tabinject_c),
+                                    byref(matricekc_c))
     # return values in standard types
     return valeur
+
 
 def getdimmodele(handlemodele):
     """ Sizes of model Handle """
@@ -144,25 +158,25 @@ def getdimmodele(handlemodele):
     nbuffer_c = c_int()
     dt_c = c_double()
     # calling the library
-    valeur = MY_LIBRARY.GetDimModele(handlemodele_c, byref(nmailles_c), \
-        byref(nsortietransfert_c), byref(nbuffer_c), byref(dt_c))
+    valeur = MY_LIBRARY.GetDimModele(handlemodele_c, byref(nmailles_c),
+                                     byref(nsortietransfert_c),
+                                     byref(nbuffer_c), byref(dt_c))
     # return values in standard types
-    return{'nmailles':nmailles_c.value, 'nsortietransfert':nsortietransfert_c.value,
-            'nbuffer':nbuffer_c.value, 'pdt':dt_c.value}
+    return{'nmailles': nmailles_c.value,
+           'nsortietransfert': nsortietransfert_c.value,
+           'nbuffer': nbuffer_c.value, 'pdt': dt_c.value}
 
-def initmodele(handlemodele, tdeb, etatproductionzero, \
-    etattransfertzero, bufferproductionzero):
+
+def initmodele(handlemodele, tdeb, etatproductionzero,
+               etattransfertzero, bufferproductionzero):
     """ State initialization of model Handle """
     # Get dimensions and ravel
     dimep1 = etatproductionzero.shape[0]
     dimep2 = etatproductionzero.shape[1]
-    #etatproductionzero = etatproductionzero.ravel()
     dimet1 = etattransfertzero.shape[0]
     dimet2 = etattransfertzero.shape[1]
-    #etattransfertzero = etattransfertzero.ravel()
     dimbp1 = bufferproductionzero.shape[0]
     dimbp2 = bufferproductionzero.shape[1]
-    #bufferproductionzero = bufferproductionzero.ravel()
     # Data preparation in ctype format
     handlemodele_c = c_int(handlemodele)
     tm = np.zeros((9, 1))
@@ -176,31 +190,36 @@ def initmodele(handlemodele, tdeb, etatproductionzero, \
     tm[7] = tdeb.timetuple().tm_yday - 1
     tm[8] = tdeb.timetuple().tm_isdst
     tm_c = (c_double * 9)(*tm)
-    #etatproductionzero = \
-    #    etatproductionzero.reshape(etatproductionzero.size)
     sizetab = dimep1 * dimep2
-    etatproductionzero_c = (c_double * sizetab)(*etatproductionzero.transpose().ravel())
+    etatproductionzero_c = \
+        (c_double * sizetab)(*etatproductionzero.transpose().ravel())
     dimep1_c = c_int(dimep1)
     dimep2_c = c_int(dimep2)
     etattransfertzero = \
         etattransfertzero.reshape(etattransfertzero.size, 1)
     sizetab = dimet1 * dimet2
-    etattransfertzero_c = (c_double * sizetab)(*etattransfertzero.transpose().ravel())
+    etattransfertzero_c = \
+        (c_double * sizetab)(*etattransfertzero.transpose().ravel())
     dimet1_c = c_int(dimet1)
     dimet2_c = c_int(dimet2)
     bufferproductionzero = \
         bufferproductionzero.reshape(bufferproductionzero.size, 1)
     sizetab = dimbp1 * dimbp2
-    bufferproductionzero_c = (c_double * sizetab)(*bufferproductionzero.transpose().ravel())
+    bufferproductionzero_c = \
+        (c_double * sizetab)(*bufferproductionzero.transpose().ravel())
     dimbp1_c = c_int(dimbp1)
     dimbp2_c = c_int(dimbp2)
     # calling the library
-    valeur = MY_LIBRARY.InitModele(handlemodele_c, byref(tm_c), \
-        byref(etatproductionzero_c), dimep1_c, dimep2_c, \
-        byref(etattransfertzero_c), dimet1_c, dimet2_c, \
-        byref(bufferproductionzero_c), dimbp1_c, dimbp2_c)
+    valeur = MY_LIBRARY.InitModele(handlemodele_c, byref(tm_c),
+                                   byref(etatproductionzero_c),
+                                   dimep1_c, dimep2_c,
+                                   byref(etattransfertzero_c),
+                                   dimet1_c, dimet2_c,
+                                   byref(bufferproductionzero_c),
+                                   dimbp1_c, dimbp2_c)
     # return values in standard types
     return valeur
+
 
 def runmordor(handlemodele, tfin):
     """ Run the spatialized Modor for the model Handle """
@@ -222,6 +241,7 @@ def runmordor(handlemodele, tfin):
     # return values in standard types
     return valeur
 
+
 def getintercept(handlemodele, numintercept):
     """ Get the flux and the state of the model Handle """
     # Data preparation in ctype format
@@ -229,10 +249,11 @@ def getintercept(handlemodele, numintercept):
     numintercept_c = c_int(numintercept)
     intercept_c = POINTER(c_double)()
     # calling the library
-    valeur = MY_LIBRARY.GetIntercept(handlemodele_c, numintercept_c, \
-        byref(intercept_c))
+    valeur = MY_LIBRARY.GetIntercept(handlemodele_c, numintercept_c,
+                                     byref(intercept_c))
     # return values in standard types
     return valeur, intercept_c
+
 
 def getetatmodele(handlemodele):
     """ Get the state of the model """
@@ -243,15 +264,18 @@ def getetatmodele(handlemodele):
     bufferproduction_c = POINTER(c_double)()
     qmoyen_c = POINTER(c_double)()
     # calling the library
-    valeur = MY_LIBRARY.GetEtatModele(handlemodele_c, byref(etatproduction_c), \
-        byref(etattransfert_c), byref(bufferproduction_c), byref(qmoyen_c))
+    valeur = MY_LIBRARY.GetEtatModele(handlemodele_c, byref(etatproduction_c),
+                                      byref(etattransfert_c),
+                                      byref(bufferproduction_c),
+                                      byref(qmoyen_c))
     if valeur != 0:
         return None
     # return values in c_types
-    return{'etatproduction':etatproduction_c, \
-            'etattransfert':etattransfert_c, \
-            'bufferproduction':bufferproduction_c, \
-            'qmoyen': qmoyen_c}
+    return{'etatproduction': etatproduction_c,
+           'etattransfert': etattransfert_c,
+           'bufferproduction': bufferproduction_c,
+           'qmoyen': qmoyen_c}
+
 
 def getdateetat(handlemodele):
     """ Get the date associated with the state of the model """
@@ -263,6 +287,7 @@ def getdateetat(handlemodele):
     # return values in standard types
     return valeur, ptr_tm_etat_c
 
+
 def geterreur():
     """ Error message """
     # Data preparation in ctype format
@@ -271,7 +296,8 @@ def geterreur():
     valeur = MY_LIBRARY.GetErreur()
     # renvoie du message
     return string_at(valeur)
-    
+
+
 def getversion():
     """ Mordor code version """
     # Data preparation in ctype format
@@ -280,6 +306,7 @@ def getversion():
     valeur = MY_LIBRARY.VersionModele()
     # renvoie du message
     return string_at(valeur)
+
 
 def detruiremodele(handlemodele):
     """ Delete the hydrological model """
@@ -290,6 +317,7 @@ def detruiremodele(handlemodele):
     # return values in standard types
     return valeur
 
+
 def detruireforcage(handleforcage):
     """ Delete the inputs """
     # Data preparation in ctype format
@@ -298,7 +326,8 @@ def detruireforcage(handleforcage):
     valeur = MY_LIBRARY.DetruireForcage(handleforcage_c)
     # return values in standard types
     return valeur
-    
+
+
 def mktime(ptr_tm):
     """  Conversion date -> time
          Update fields of the tm structure
@@ -310,4 +339,3 @@ def mktime(ptr_tm):
     valeur = MY_LIBRARY.mktime_(byref(ptr_tm_fin_c))
     # return values in standard types
     return valeur, ptr_tm_fin_c
-

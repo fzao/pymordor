@@ -107,13 +107,13 @@ def datevec(n):
     # year
     n = np.floor(n)
     year = np.floor(n / 365.2425)
-    temp = n - (365.0 * year + np.ceil(0.25 * year) -
-                np.ceil(0.01 * year) + np.ceil(0.0025 * year))
+    temp = n - (365.0 * year + np.ceil(0.25 * year)
+                - np.ceil(0.01 * year) + np.ceil(0.0025 * year))
     mask = (temp <= 0)
     if mask:
         year = year - 1
-        n = n - (365.0 * year + np.ceil(0.25 * year) -
-                 np.ceil(0.01 * year) + np.ceil(0.0025 * year))
+        n = n - (365.0 * year + np.ceil(0.25 * year)
+                 - np.ceil(0.01 * year) + np.ceil(0.0025 * year))
     else:
         n = temp
     # month
@@ -257,7 +257,7 @@ def upstream_list(maillage, id_exut):
         for i in range(0, len(recherche)):
             im = recherche[i]
             ajout.extend(np.take(nmailles,
-                         np.where(maillage['topologie'] == im))
+                                 np.where(maillage['topologie'] == im))
                          .ravel().tolist())
         mailleamont.extend(ajout)
         recherche = ajout
