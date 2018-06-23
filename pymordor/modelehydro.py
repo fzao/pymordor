@@ -11,6 +11,7 @@ import sys
 import os
 from ctypes import *
 import numpy as np
+import datetime
 
 LIBMORDOR = os.environ.get('LIBMORDOR')
 
@@ -258,34 +259,60 @@ def getintercept(handlemodele, numintercept):
 def getetatmodele(handlemodele):
     """ Get the state of the model """
     # Data preparation in ctype format
+    dim_mod = getdimmodele(handlemodele)
+    nbuffer = dim_mod['nbuffer']
+    nmailles = dim_mod['nmailles']
+    nsortietransfert = dim_mod['nsortietransfert']
     handlemodele_c = c_int(handlemodele)
-    etatproduction_c = POINTER(c_double)()
-    etattransfert_c = POINTER(c_double)()
-    bufferproduction_c = POINTER(c_double)()
-    qmoyen_c = POINTER(c_double)()
+    sizetab = 8 * nmailles * 10
+    etatproduction_c = (c_double * sizetab)(0.0)
+    sizetab = nmailles * nsortietransfert
+    etattransfert_c = (c_double * sizetab)(0.0)
+    sizetab = nmailles * nbuffer
+    bufferproduction_c = (c_double * sizetab)(0.0)
+    qmoyen_c = (c_double * nsortietransfert)(0.0)
     # calling the library
-    valeur = MY_LIBRARY.GetEtatModele(handlemodele_c, byref(etatproduction_c),
-                                      byref(etattransfert_c),
-                                      byref(bufferproduction_c),
-                                      byref(qmoyen_c))
+    valeur = MY_LIBRARY.R_GetEtatModele(handlemodele_c,
+                                        byref(etatproduction_c),
+                                        byref(etattransfert_c),
+                                        byref(bufferproduction_c),
+                                        byref(qmoyen_c))
     if valeur != 0:
         return None
-    # return values in c_types
-    return{'etatproduction': etatproduction_c,
-           'etattransfert': etattransfert_c,
-           'bufferproduction': bufferproduction_c,
-           'qmoyen': qmoyen_c}
+    # return values in numpy array
+    etatproduction = np.array(etatproduction_c).reshape(10, 8*nmailles)
+    etatproduction = etatproduction.transpose()
+    etattransfert = \
+        np.array(etattransfert_c).reshape(nsortietransfert, nmailles)
+    etattransfert = etattransfert.transpose()
+    bufferproduction = np.array(bufferproduction_c).reshape(nmailles, nbuffer)
+    bufferproduction = bufferproduction.transpose()
+    qmoyen = np.array(qmoyen_c).reshape(nsortietransfert, 1)
+    return{'etatproduction': etatproduction,
+           'etattransfert': etattransfert,
+           'bufferproduction': bufferproduction,
+           'qmoyen': qmoyen}
 
 
 def getdateetat(handlemodele):
     """ Get the date associated with the state of the model """
     # Data preparation in ctype format
     handlemodele_c = c_int(handlemodele)
-    ptr_tm_etat_c = POINTER(c_double)()
+    ptr_tm_etat_c = (c_double * 9)(0.0)
     # calling the library
     valeur = MY_LIBRARY.GetDateEtat(handlemodele_c, byref(ptr_tm_etat_c))
     # return values in standard types
-    return valeur, ptr_tm_etat_c
+    if valeur != 0:
+        return None
+    else:
+        ptr_tm_etat = np.array(ptr_tm_etat_c)
+        datestate = datetime.datetime(int(ptr_tm_etat[5])+1850,
+                                      int(ptr_tm_etat[4])+1,
+                                      int(ptr_tm_etat[3]),
+                                      int(ptr_tm_etat[2]),
+                                      int(ptr_tm_etat[1]),
+                                      int(ptr_tm_etat[0]))
+        return datestate
 
 
 def geterreur():
