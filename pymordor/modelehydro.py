@@ -283,10 +283,8 @@ def getetatmodele(handlemodele):
     etatproduction = np.array(etatproduction_c).reshape(10, 8*nmailles)
     etatproduction = etatproduction.transpose()
     etattransfert = \
-        np.array(etattransfert_c).reshape(nsortietransfert, nmailles)
-    etattransfert = etattransfert.transpose()
-    bufferproduction = np.array(bufferproduction_c).reshape(nmailles, nbuffer)
-    bufferproduction = bufferproduction.transpose()
+        np.array(etattransfert_c).reshape(nmailles, nsortietransfert)
+    bufferproduction = np.array(bufferproduction_c).reshape(nbuffer, nmailles)
     qmoyen = np.array(qmoyen_c).reshape(nsortietransfert, 1)
     return{'etatproduction': etatproduction,
            'etattransfert': etattransfert,
