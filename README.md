@@ -1,8 +1,15 @@
 # Short Description
-Python wrapper for the hydrological model [MORDOR-TS](https://doi.org/10.1016/j.jhydrol.2017.07.037) developed by EDF 
+Python wrapper for the spatialized hydrological model [MORDOR-TS](https://doi.org/10.1016/j.jhydrol.2017.07.037) developed by EDF 
+
+<p align="center">
+  <img src="./doc/Tarn.png" width="600"/>
+</p>
+<p align="center">
+   <b>The Tarn catchment at Millau in France</b> 
+</p>
 
 # Installation
-pymordor is compatible with Python 2 and 3. It requires the environment variable LIBMORDOR to be set where the dynamic Fortran libraries are located. Fortran source files of MORDOR-TS are not provided.
+_pymordor_ is compatible with Python 2 and 3. It requires the environment variable LIBMORDOR to be set where the dynamic Fortran libraries are located. Fortran source files of MORDOR-TS are not provided but can be provided on [request](mailto:fabrice.zaoui@edf.fr).
 
 # License
 GPL v3
