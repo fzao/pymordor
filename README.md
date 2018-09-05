@@ -2,7 +2,7 @@
 Python wrapper for the spatialized hydrological model [MORDOR-TS](https://doi.org/10.1016/j.jhydrol.2017.07.037) developed by EDF 
 
 <p align="center">
-  <img src="./doc/Tarn.png" width="600"/>
+  <img src="./doc/bv.png" width="600"/>
 </p>
 <p align="center">
    <b>Hydrological spatialized mesh</b> 
