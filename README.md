@@ -5,7 +5,7 @@ Python wrapper for the spatialized hydrological model [MORDOR-TS](https://doi.or
   <img src="./doc/Tarn.png" width="600"/>
 </p>
 <p align="center">
-   <b>The Tarn catchment at Millau in France</b> 
+   <b>Hydrological spatialized mesh</b> 
 </p>
 
 # Installation
