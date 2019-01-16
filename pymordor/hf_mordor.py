@@ -79,9 +79,12 @@ def create(temps, maillage, meteo, etat0, param, tabinj=None):
     param[3] = maillage['descripteurs'][i, 3]
     param[5] = maillage['descripteurs'][i, 2]
     param[6] = maillage['descripteurs'][i, 4]
+    # prep = prepparam(param, etage.transpose(), maillage['nbandes'],
+    #                  don, temps['ndates'],
+    #                  np.hstack((temps['ndates']+nech, etat0[0:9]))) 
     prep = prepparam(param, etage.transpose(), maillage['nbandes'],
                      don, temps['ndates'],
-                     np.hstack((temps['ndates']+nech, etat0[0:9])))
+                     np.hstack((temps['ndates']+nech, etat0[1:9]))) # #AP# 20181221
 
     # Initialisation Mordor global
     matpmt = prep['pmt2']
@@ -111,9 +114,12 @@ def create(temps, maillage, meteo, etat0, param, tabinj=None):
             param[3] = maillage['descripteurs'][i, 3]
             param[5] = maillage['descripteurs'][i, 2]
             param[6] = maillage['descripteurs'][i, 4]
+            # prep = prepparam(param, etage.transpose(), maillage['nbandes'],
+            #                  don, temps['ndates'],
+            #                  np.hstack((temps['ndates']+nech, etat0[0:9])))
             prep = prepparam(param, etage.transpose(), maillage['nbandes'],
                              don, temps['ndates'],
-                             np.hstack((temps['ndates']+nech, etat0[0:9])))
+                             np.hstack((temps['ndates']+nech, etat0[1:9]))) # #AP# 20181221
             matpmt = np.vstack((matpmt, prep['pmt2']))
             iniglob = initialisation(prep['pmt2'], tmin, tmax, prep['cond2'])
             iniglob['tpn'] = iniglob['tpn'][0:temps['ndates'], ]
@@ -171,9 +177,12 @@ def create_multi(temps, maillage, meteo, etat0, matparam, tabinj=None):
     param[3] = maillage['descripteurs'][i, 3]
     param[5] = maillage['descripteurs'][i, 2]
     param[6] = maillage['descripteurs'][i, 4]
+    # prep = prepparam(param, etage.transpose(), maillage['nbandes'],
+    #                  don, temps['ndates'],
+    #                  np.hstack((temps['ndates']+nech, etat0[0:9])))
     prep = prepparam(param, etage.transpose(), maillage['nbandes'],
                      don, temps['ndates'],
-                     np.hstack((temps['ndates']+nech, etat0[0:9])))
+                     np.hstack((temps['ndates']+nech, etat0[1:9]))) # #AP# 20181221
 
     # Initialisation Mordor global
     matpmt = prep['pmt2']
@@ -204,9 +213,12 @@ def create_multi(temps, maillage, meteo, etat0, matparam, tabinj=None):
             param[3] = maillage['descripteurs'][i, 3]
             param[5] = maillage['descripteurs'][i, 2]
             param[6] = maillage['descripteurs'][i, 4]
+            # prep = prepparam(param, etage.transpose(), maillage['nbandes'],
+            #                  don, temps['ndates'],
+            #                  np.hstack((temps['ndates']+nech, etat0[0:9])))
             prep = prepparam(param, etage.transpose(), maillage['nbandes'],
                              don, temps['ndates'],
-                             np.hstack((temps['ndates']+nech, etat0[0:9])))
+                             np.hstack((temps['ndates']+nech, etat0[1:9])))  # #AP# 20181221
             matpmt = np.vstack((matpmt, prep['pmt2']))
             iniglob = initialisation(prep['pmt2'], tmin, tmax, prep['cond2'])
             iniglob['tpn'] = iniglob['tpn'][0:temps['ndates'], ]

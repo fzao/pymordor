@@ -205,11 +205,14 @@ def litficmeteo(rep, temps, nom_bv):
     id_d = temps["date1"].timetuple().tm_yday
     id_f = id_d + temps["ndates"]
     filerain = radrain + "_" + str(a1) + ".txt"
-    rain = np.loadtxt(filerain)
+    # rain = np.loadtxt(filerain) #AP# 20180724
+    rain = np.loadtxt(filerain,skiprows=id_d-1)
     filetmin = radtmin + "_" + str(a1) + ".txt"
-    tmin = np.loadtxt(filetmin)
+    #tmin = np.loadtxt(filetmin) #AP# 20180724
+    tmin = np.loadtxt(filetmin,skiprows=id_d-1)
     filetmax = radtmax + "_" + str(a1) + ".txt"
-    tmax = np.loadtxt(filetmax)
+    #tmax = np.loadtxt(filetmax) #AP# 20180724
+    tmax = np.loadtxt(filetmax,skiprows=id_d-1)
     for i in list(range(a1+1, a2+1)):
         filerain = radrain + "_" + str(i) + ".txt"
         rain = np.vstack((rain, np.loadtxt(filerain)))
