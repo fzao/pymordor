@@ -16,7 +16,7 @@ from pymordor.modelehydro import getdimmodele, getetatmodele, creermodele,\
 
 LIBMORDOR = os.environ.get('LIBMORDOR')
 
-if sys.platform.startswith('linux'):
+if sys.platform.startswith('linux') | sys.platform.startswith('darwin'):
     try:
         MY_LIBRARY0 = CDLL(LIBMORDOR+'/libRunMordorTS.so')
     except Exception:

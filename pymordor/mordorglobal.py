@@ -18,7 +18,7 @@ NSTOCK = 10
 NRES1 = 25
 LIBMORDOR = os.environ.get('LIBMORDOR')
 
-if sys.platform.startswith('linux'):
+if sys.platform.startswith('linux') | sys.platform.startswith('darwin'):
     try:
         MY_LIBRARY = CDLL(LIBMORDOR+'/libMordorGlobal.so')
     except Exception:

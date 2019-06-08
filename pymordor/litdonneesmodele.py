@@ -18,7 +18,7 @@ MAXCONTRAINTES = 1500
 LENSTR = 200
 LIBMORDOR = os.environ.get('LIBMORDOR')
 
-if sys.platform.startswith('linux'):
+if sys.platform.startswith('linux') | sys.platform.startswith('darwin'):
     try:
         MY_LIBRARY = CDLL(LIBMORDOR+'/libLitDonneesModele.so')
     except Exception:

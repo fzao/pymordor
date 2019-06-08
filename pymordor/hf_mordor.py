@@ -18,7 +18,7 @@ from pymordor.utils import calcidjour
 
 LIBMORDOR = os.environ.get('LIBMORDOR')
 
-if sys.platform.startswith('linux'):
+if sys.platform.startswith('linux') | sys.platform.startswith('darwin'):
     try:
         MY_LIBRARY0 = CDLL(LIBMORDOR+'/libRunMordorTS.so')
     except Exception:
@@ -81,7 +81,7 @@ def create(temps, maillage, meteo, etat0, param, tabinj=None):
     param[6] = maillage['descripteurs'][i, 4]
     # prep = prepparam(param, etage.transpose(), maillage['nbandes'],
     #                  don, temps['ndates'],
-    #                  np.hstack((temps['ndates']+nech, etat0[0:9]))) 
+    #                  np.hstack((temps['ndates']+nech, etat0[0:9])))
     prep = prepparam(param, etage.transpose(), maillage['nbandes'],
                      don, temps['ndates'],
                      np.hstack((temps['ndates']+nech, etat0[1:9]))) # #AP# 20181221
