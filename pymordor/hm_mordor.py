@@ -95,19 +95,19 @@ def runintercept(hm, temps, idmaille, idinter):
         etat['etatproduction'][0:dim_mod['nmailles']*8*10]
     state['etatproduction'] = np.asarray(state['etatproduction'])
     state['etatproduction'] = state['etatproduction']\
-        .reshape(10, dim_mod['nmailles'] * 8).transpose()
+        .reshape(dim_mod['nmailles'] * 8, 10)
     state['etattransfert'] = \
         etat['etattransfert'][0:dim_mod['nmailles']
                               * dim_mod['nsortietransfert']]
     state['etattransfert'] = np.asarray(state['etattransfert'])
     state['etattransfert'] = state['etattransfert']\
-        .reshape(dim_mod['nsortietransfert'], dim_mod['nmailles']).transpose()
+        .reshape(dim_mod['nmailles'], dim_mod['nsortietransfert'])
     state['bufferproduction'] = \
         etat['bufferproduction'][0:dim_mod['nbuffer']*dim_mod['nmailles']]
     state['bufferproduction'] = np.asarray(state['bufferproduction'])
     state['bufferproduction'] = \
-        state['bufferproduction'].reshape(dim_mod['nmailles'],
-                                          dim_mod['nbuffer']).transpose()
+        state['bufferproduction'].reshape(dim_mod['nbuffer'],
+                                          dim_mod['nmailles'])
     state['qmoyen'] = etat['qmoyen'][0:dim_mod['nsortietransfert']]
     state['qmoyen'] = np.asarray(state['qmoyen'])
     # --> qsim
